@@ -1,16 +1,23 @@
 <!-- kanban/templates/kanban/issues_partial.html -->
 {% for task in tasks %}
-    <div class="p-2 border-b mb-2">
-        <h3 class="font-bold"><a href="{{ task.web_url }}" target="_blank" class="issue-link">{{ task.title }}</a></h3> <!-- Make title a link -->
-        <p class="text-sm text-gray-500">Author: {{ task.author }}</p> <!-- Display author name -->
-        <div class="flex space-x-2 mt-2">
-            {% for label in task.labels %}
-            <span class="text-xs font-semibold mr-2 px-2.5 py-0.5 rounded" style="color: {{ label.text_color }}; background-color: {{ label.color }};">{{ label.name }}</span>
-            {% endfor %}
+    <li class="p-5 rounded bg-white shadow-sm mb-2">
+        <div>
+            <div class="flex">
+                <h4 class="text-base font-semibold mb-0 mt-0 mr-3 break-words">
+                    <a href="{{ task.web_url }}" target="_blank" class="hover:text-blue-800 hover:underline">{{ task.title }}</a>
+                </h4>
+            </div>
+            <div class="mt-2 flex flex-wrap">
+                {% for label in task.labels %}
+                    <span class="mt-2 mr-2 px-2 py-1 rounded text-sm" style="background-color: {{ label.color }}; color: {{ label.text_color }};">
+                        {{ label.name }}
+                    </span>
+                {% endfor %}
+            </div>
         </div>
-    </div>
+    </li>
 {% endfor %}
 {% if tasks %}
-    <div hx-trigger="revealed" hx-get="{% url 'load_more_issues' %}?state={{ state }}&page={{ page|add:1 }}" hx-swap="beforeend"></div>
+    <li hx-trigger="revealed" hx-get="{% url 'load_more_issues' %}?state={{ state }}&page={{ page|add:1 }}" hx-swap="beforeend"></li>
 {% endif %}
 

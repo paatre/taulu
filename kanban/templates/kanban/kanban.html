@@ -6,35 +6,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kanban Board</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <link href="{% static 'kanban/styles.css' %}" rel="stylesheet"> <!-- Include the custom CSS -->
     <script src="https://unpkg.com/htmx.org@1.7.0"></script>
-    <style>
-        .issue-link {
-            text-decoration: none;
-            color: inherit;
-        }
-        .issue-link:hover {
-            color: #1f75cb;
-            text-decoration: underline;
-        }
-    </style>
 </head>
-<body class="bg-gray-100 p-5">
+<body class="p-5 bg-gray-100">
     <h1 class="text-3xl font-bold mb-5">Kanban Board</h1>
     <div class="flex space-x-4">
         <!-- Column for Open Issues -->
-        <div class="w-1/2">
+        <div class="w-1/2 bg-gray-200 p-3 rounded shadow">
             <h2 class="text-2xl font-semibold mb-3">Open</h2>
-            <div class="bg-white p-3 rounded shadow" id="open-issues-container">
-                {% include 'kanban/issues_partial.html' with tasks=open_tasks state='opened' page=1 %}
+            <div>
+                <ul class="w-full h-full list-none mb-0 p-0 overflow-x-hidden overflow-y-auto">
+                    {% include 'kanban/issues_partial.html' with tasks=open_tasks state='opened' page=1 %}
+                </ul>
             </div>
         </div>
         <!-- Column for Closed Issues -->
-        <div class="w-1/2">
+        <div class="w-1/2 bg-gray-200 p-3 rounded shadow">
             <h2 class="text-2xl font-semibold mb-3">Closed</h2>
-            <div class="bg-white p-3 rounded shadow" id="closed-issues-container">
-                {% include 'kanban/issues_partial.html' with tasks=closed_tasks state='closed' page=1 %}
+            <div>
+                <ul class="w-full h-full list-none mb-0 p-0 overflow-x-hidden overflow-y-auto">
+                    {% include 'kanban/issues_partial.html' with tasks=closed_tasks state='closed' page=1 %}
+                </ul>
             </div>
         </div>
     </div>
