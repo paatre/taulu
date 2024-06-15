@@ -13,8 +13,8 @@
 <body class="p-5 bg-gray-100">
     <h1 class="text-3xl font-bold mb-5">Kanban Board</h1>
     <div class="flex space-x-4">
-        <!-- Column for Open Issues -->
-        <div class="w-1/2 bg-gray-200 p-3 rounded shadow">
+        <!-- Open issues -->
+        <div class="w-1/3 bg-gray-200 p-3 rounded shadow">
             <h2 class="text-2xl font-semibold mb-3">Open</h2>
             <div>
                 <ul class="w-full h-full list-none mb-0 p-0 overflow-x-hidden overflow-y-auto">
@@ -22,8 +22,17 @@
                 </ul>
             </div>
         </div>
-        <!-- Column for Closed Issues -->
-        <div class="w-1/2 bg-gray-200 p-3 rounded shadow">
+        <!-- Issues in progress -->
+        <div class="w-1/3 bg-gray-200 p-3 rounded shadow">
+            <h2 class="text-2xl font-semibold mb-3">Working</h2>
+            <div>
+                <ul class="w-full h-full list-none mb-0 p-0 overflow-x-hidden overflow-y-auto">
+                    {% include 'kanban/issues_partial.html' with tasks=working_tasks state='opened' label='Working' page=1 %}
+                </ul>
+            </div>
+        </div>
+        <!-- Closed issues -->
+        <div class="w-1/3 bg-gray-200 p-3 rounded shadow">
             <h2 class="text-2xl font-semibold mb-3">Closed</h2>
             <div>
                 <ul class="w-full h-full list-none mb-0 p-0 overflow-x-hidden overflow-y-auto">

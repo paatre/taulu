@@ -2,14 +2,19 @@
 {% for task in tasks %}
     <li class="p-5 rounded bg-white shadow-sm mb-2">
         <div>
-            <div class="flex">
+            <div class="flex justify-between">
                 <h4 class="text-base font-semibold mb-0 mt-0 mr-3 break-words">
                     <a href="{{ task.web_url }}" target="_blank" class="hover:text-blue-800 hover:underline">{{ task.title }}</a>
                 </h4>
             </div>
-            <div class="mt-2 flex flex-wrap">
+            {% if task.milestone %}
+            <div class="flex mt-1">
+                <span class="text-xs bg-gray-200 text-gray-800 rounded-full px-2 py-1">{{ task.milestone }}</span>
+            </div>
+            {% endif %}
+            <div class="flex flex-wrap mt-2">
                 {% for label in task.labels %}
-                    <span class="mt-2 mr-2 px-2 py-1 rounded text-sm" style="background-color: {{ label.color }}; color: {{ label.text_color }};">
+                    <span class="mr-2 px-2 py-1 rounded text-sm" style="background-color: {{ label.color }}; color: {{ label.text_color }};">
                         {{ label.name }}
                     </span>
                 {% endfor %}
@@ -18,6 +23,6 @@
     </li>
 {% endfor %}
 {% if tasks %}
-    <li hx-trigger="revealed" hx-get="{% url 'load_more_issues' %}?state={{ state }}&page={{ page|add:1 }}" hx-swap="beforeend"></li>
+    <li hx-trigger="revealed" hx-get="{% url 'load_more_issues' %}?state={{ state }}&label={{ label }}&page={{ page|add:1 }}" hx-swap="beforeend"></li>
 {% endif %}
 
