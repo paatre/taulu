@@ -149,6 +149,3 @@ Sessionx.vim
 tags
 # Persistent undo
 [._]*.un~
-
-# User-specific stuff
-local_utils
