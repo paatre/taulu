@@ -1,7 +1,7 @@
 <!-- kanban/templates/kanban/issues_partial.html -->
 {% for task in tasks %}
     <div class="p-2 border-b mb-2">
-        <h3 class="font-bold">{{ task.title }}</h3>
+        <h3 class="font-bold"><a href="{{ task.web_url }}" target="_blank" class="issue-link">{{ task.title }}</a></h3> <!-- Make title a link -->
         <p class="text-sm text-gray-500">Author: {{ task.author }}</p> <!-- Display author name -->
         <div class="flex space-x-2 mt-2">
             {% for label in task.labels %}

@@ -5,7 +5,6 @@ from django.shortcuts import render
 
 import gitlab
 
-
 gl = gitlab.Gitlab(settings.GITLAB_URL, private_token=settings.GITLAB_PRIVATE_TOKEN)
 current_user = gl.users.list(username=settings.GITLAB_USERNAME)[0]
 
@@ -39,6 +38,7 @@ def get_gitlab_issues(user, state=None, page=1, per_page=20):
                 "state": issue.state,
                 "labels": labels,
                 "author": issue.author["name"],
+                "web_url": issue.web_url,
             }
         )
 

@@ -1,0 +1,34 @@
+/* kanban/static/kanban/styles.css */
+
+@font-face {
+    font-family: 'GitLab Sans';
+    src: url('/static/kanban/fonts/gitlab-sans/GitLabSans.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'GitLab Mono';
+    src: url('/static/kanban/fonts/gitlab-mono/GitLabMono.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+    font-family: 'GitLab Sans', sans-serif;
+}
+
+.code {
+    font-family: 'GitLab Mono', monospace;
+}
+
+.issue-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.issue-link:hover {
+    color: #1f75cb;
+    text-decoration: underline;
+}
+
