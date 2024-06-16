@@ -7,39 +7,74 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kanban Board</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="{% static 'kanban/styles.css' %}" rel="stylesheet"> <!-- Include the custom CSS -->
-    <script src="https://unpkg.com/htmx.org@1.7.0"></script>
+    <link href="{% static 'kanban/styles.css' %}" rel="stylesheet">
+    <script src="https://unpkg.com/htmx.org@1.9.12" integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script>
+        htmx.onLoad(function(content) {
+            var sortables = content.querySelectorAll(".sortable");
+            for (var i = 0; i < sortables.length; i++) {
+                var sortable = sortables[i];
+                var sortableInstance = new Sortable(sortable, {
+                    animation: 150,
+                    ghostClass: 'bg-amber-200',
+                    group: 'shared',
+                    onStart: function (evt) {
+                        evt.item.classList.add('cursor-grabbing');
+                        evt.item.classList.remove('cursor-grab');
+                    },
+                    onEnd: function (evt) {
+                        evt.item.classList.remove('cursor-grabbing');
+                        evt.item.classList.add('cursor-grab');
+                        htmx.trigger(evt.item.closest('form'), 'end');
+                    }
+                });
+
+                sortable.addEventListener("htmx:afterSwap", function() {
+                    sortableInstance.option("disabled", false);
+                });
+            }
+        });
+    </script>
 </head>
 <body class="p-5 bg-gray-100">
     <h1 class="text-3xl font-bold mb-5">Kanban Board</h1>
     <div class="flex space-x-4">
-        <!-- Open issues -->
+        {% for board in boards %}
         <div class="w-1/3 bg-gray-200 p-3 rounded shadow">
-            <h2 class="text-2xl font-semibold mb-3">Open</h2>
-            <div>
-                <ul class="w-full h-full list-none mb-0 p-0 overflow-x-hidden overflow-y-auto">
-                    {% include 'kanban/issues_partial.html' with tasks=open_tasks state='opened' page=1 %}
+            <h2 class="text-2xl font-semibold mb-3">{{ board.name }}</h2>
+            <form method="post" hx-post="{% url 'reorder_issues' %}" hx-trigger="end" hx-swap="none">
+                {% csrf_token %}
+                <input type="hidden" name="board_id" value="{{ board.id }}">
+                <ul class="sortable w-full h-full list-none mb-0 p-0 overflow-x-hidden overflow-y-auto">
+                    {% for board_issue in board.board_issues.all %}
+                    <li class="p-5 rounded bg-white shadow-sm mb-2 cursor-grab" data-id="{{ board_issue.issue.id }}">
+                        <input type="hidden" name="items" value="{{ board_issue.issue.id }}">
+                        <div>
+                            <div class="flex justify-between">
+                                <h4 class="text-base font-semibold mb-0 mt-0 mr-3 break-words">
+                                    <a href="{{ board_issue.issue.web_url }}" target="_blank" class="hover:text-blue-800 hover:underline">{{ board_issue.issue.title }}</a>
+                                </h4>
+                            </div>
+                            {% if board_issue.issue.milestone %}
+                            <div class="flex mt-1">
+                                <span class="text-xs bg-gray-200 text-gray-800 rounded-full px-2 py-1">{{ board_issue.issue.milestone }}</span>
+                            </div>
+                            {% endif %}
+                            <div class="flex flex-wrap mt-2">
+                                {% for label in board_issue.issue.labels %}
+                                <span class="mr-2 px-2 py-1 rounded text-sm hover:cursor-pointer" style="background-color: {{ label.color }}; color: {{ label.text_color }};">
+                                    {{ label.name }}
+                                </span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </li>
+                    {% endfor %}
                 </ul>
-            </div>
+            </form>
         </div>
-        <!-- Issues in progress -->
-        <div class="w-1/3 bg-gray-200 p-3 rounded shadow">
-            <h2 class="text-2xl font-semibold mb-3">Working</h2>
-            <div>
-                <ul class="w-full h-full list-none mb-0 p-0 overflow-x-hidden overflow-y-auto">
-                    {% include 'kanban/issues_partial.html' with tasks=working_tasks state='opened' label='Working' page=1 %}
-                </ul>
-            </div>
-        </div>
-        <!-- Closed issues -->
-        <div class="w-1/3 bg-gray-200 p-3 rounded shadow">
-            <h2 class="text-2xl font-semibold mb-3">Closed</h2>
-            <div>
-                <ul class="w-full h-full list-none mb-0 p-0 overflow-x-hidden overflow-y-auto">
-                    {% include 'kanban/issues_partial.html' with tasks=closed_tasks state='closed' page=1 %}
-                </ul>
-            </div>
-        </div>
+        {% endfor %}
     </div>
 </body>
 </html>

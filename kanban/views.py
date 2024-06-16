@@ -1,69 +1,31 @@
 # kanban/views.py
 
+
 from django.conf import settings
+from django.http import JsonResponse
 from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Prefetch
 
-import gitlab
-
-gl = gitlab.Gitlab(settings.GITLAB_URL, private_token=settings.GITLAB_PRIVATE_TOKEN)
-current_user = gl.users.list(username=settings.GITLAB_USERNAME)[0]
-
-
-def get_gitlab_issues(user, state=None, label=None, page=1, per_page=10):
-    issue_params = {
-        "assignee_id": user.id,
-        "order_by": "updated_at",
-        "page": page,
-        "per_page": per_page,
-        "scope": "all",
-        "sort": "desc",
-        "state": state,
-        "with_labels_details": True,
-    }
-
-    if label:
-        issue_params["labels"] = label
-
-    issues = gl.issues.list(**issue_params)
-
-    tasks = []
-    for issue in issues:
-        labels = [
-            {
-                "color": label["color"],
-                "name": label["name"],
-                "text_color": label["text_color"],
-            }
-            for label in issue.labels
-        ]
-        tasks.append(
-            {
-                "author": issue.author["name"],
-                "description": issue.description,
-                "labels": labels,
-                "milestone": issue.milestone["title"] if issue.milestone else None,
-                "state": issue.state,
-                "title": issue.title,
-                "web_url": issue.web_url,
-            }
-        )
-
-    return tasks
+from .models import Board, Issue, BoardIssue
 
 
 def kanban_board(request):
-    open_tasks = get_gitlab_issues(current_user, state="opened")
-    working_tasks = get_gitlab_issues(current_user, state="opened", label="Working")
-    closed_tasks = get_gitlab_issues(current_user, state="closed")
+    boards = Board.objects.prefetch_related(
+        Prefetch(
+            "board_issues",
+            queryset=BoardIssue.objects.select_related("issue").order_by("position"),
+        )
+    ).all()
+
+    # Evaluate the prefetch_related queryset
+    boards_list = list(boards)
 
     return render(
         request,
         "kanban/kanban.html",
         {
-            "closed_tasks": closed_tasks,
-            "open_tasks": open_tasks,
-            "page": 1,
-            "working_tasks": working_tasks,
+            "boards": boards_list,
         },
     )
 
@@ -78,4 +40,30 @@ def load_more_issues(request):
         request,
         "kanban/issues_partial.html",
         {"tasks": tasks, "state": state, "label": label, "page": page},
+    )
+
+
+@csrf_exempt
+def reorder_issues(request):
+    if request.method == "POST":
+        try:
+            board_id = request.POST.get("board_id")
+            ordered_ids = request.POST.getlist("items")
+            if not ordered_ids:
+                raise ValueError("No items received")
+            if not board_id:
+                raise ValueError("Board ID is required")
+
+            board = Board.objects.get(id=board_id)
+
+            for index, issue_id in enumerate(ordered_ids):
+                board_issue = BoardIssue.objects.get(issue__id=issue_id, board=board)
+                board_issue.position = index + 1
+                board_issue.save()
+
+            return JsonResponse({"status": "success", "ordered_ids": ordered_ids})
+        except Exception as e:
+            return JsonResponse({"status": "failed", "message": str(e)}, status=400)
+    return JsonResponse(
+        {"status": "failed", "message": "Invalid request method"}, status=400
     )
