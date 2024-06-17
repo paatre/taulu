@@ -62,7 +62,7 @@ class Command(BaseCommand):
             if issue.state == "opened":
                 board = (
                     boards["working"]
-                    if any(label["name"] == "working" for label in labels)
+                    if any(label["name"] == "Working" for label in labels)
                     else boards["open"]
                 )
             else:
