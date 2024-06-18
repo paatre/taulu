@@ -63,7 +63,7 @@
                             {% endif %}
                             <div class="flex flex-wrap mt-2">
                                 {% for label in board_issue.issue.labels %}
-                                <span class="mr-2 px-2 py-1 rounded text-sm hover:cursor-pointer" style="background-color: {{ label.color }}; color: {{ label.text_color }};">
+                                <span class="mr-2 px-2 py-1 rounded text-sm" style="background-color: {{ label.color }}; color: {{ label.text_color }};">
                                     {{ label.name }}
                                 </span>
                                 {% endfor %}
