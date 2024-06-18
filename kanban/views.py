@@ -57,9 +57,26 @@ def reorder_issues(request):
             board = Board.objects.get(id=board_id)
 
             for index, issue_id in enumerate(ordered_ids):
-                board_issue = BoardIssue.objects.get(issue__id=issue_id, board=board)
-                board_issue.position = index + 1
-                board_issue.save()
+                board_issue = BoardIssue.objects.get(issue__id=issue_id)
+
+                # Check if the issue is moved to a different board
+                if board_issue.board_id != int(board_id):
+                    old_board_id = board_issue.board_id
+                    board_issue.board_id = board_id
+                    board_issue.position = index + 1
+                    board_issue.save()
+
+                    # Adjust positions in the old board
+                    old_board_issues = BoardIssue.objects.filter(
+                        board_id=old_board_id
+                    ).order_by("position")
+                    for i, issue in enumerate(old_board_issues):
+                        issue.position = i + 1
+                        issue.save()
+                else:
+                    # If the issue remains in the same board, just update the position
+                    board_issue.position = index + 1
+                    board_issue.save()
 
             return JsonResponse({"status": "success", "ordered_ids": ordered_ids})
         except Exception as e:
