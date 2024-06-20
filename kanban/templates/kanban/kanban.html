@@ -26,7 +26,7 @@
                     onEnd: function (evt) {
                         evt.item.classList.remove('cursor-grabbing');
                         evt.item.classList.add('cursor-grab');
-                        htmx.trigger(evt.item.closest('form'), 'end');
+                        // htmx.trigger(evt.item.closest('form'), 'end');
                     }
                 });
 
@@ -47,30 +47,7 @@
                 {% csrf_token %}
                 <input type="hidden" name="board_id" value="{{ board.id }}">
                 <ul class="sortable w-full h-full list-none mb-0 p-0 overflow-x-hidden overflow-y-auto">
-                    {% for board_issue in board.board_issues.all %}
-                    <li class="p-5 rounded bg-white shadow-sm mb-2 cursor-grab" data-id="{{ board_issue.issue.id }}">
-                        <input type="hidden" name="items" value="{{ board_issue.issue.id }}">
-                        <div>
-                            <div class="flex justify-between">
-                                <h4 class="text-base font-semibold mb-0 mt-0 mr-3 break-words">
-                                    <a href="{{ board_issue.issue.web_url }}" target="_blank" class="hover:text-blue-800 hover:underline">{{ board_issue.issue.title }}</a>
-                                </h4>
-                            </div>
-                            {% if board_issue.issue.milestone %}
-                            <div class="flex mt-1">
-                                <span class="text-xs bg-gray-200 text-gray-800 rounded-full px-2 py-1">{{ board_issue.issue.milestone }}</span>
-                            </div>
-                            {% endif %}
-                            <div class="flex flex-wrap mt-2">
-                                {% for label in board_issue.issue.labels %}
-                                <span class="mr-2 px-2 py-1 rounded text-sm" style="background-color: {{ label.color }}; color: {{ label.text_color }};">
-                                    {{ label.name }}
-                                </span>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </li>
-                    {% endfor %}
+                    {% include "kanban/issues_partial.html" with board_issues=board.board_issues.all|slice:":10" board_id=board.id page=1 %}
                 </ul>
             </form>
         </div>

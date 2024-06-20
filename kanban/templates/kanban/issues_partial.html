@@ -1,28 +1,24 @@
-{% for task in tasks %}
-    <li class="p-5 rounded bg-white shadow-sm mb-2 cursor-grab" data-id="{{ task.id }}">
-        <input type="hidden" name="items" value="{{ task.id }}">
-        <div>
-            <div class="flex justify-between">
-                <h4 class="text-base font-semibold mb-0 mt-0 mr-3 break-words">
-                    <a href="{{ task.web_url }}" target="_blank" class="hover:text-blue-800 hover:underline">{{ task.title }}</a>
-                </h4>
-            </div>
-            {% if task.milestone %}
-            <div class="flex mt-1">
-                <span class="text-xs bg-gray-200 text-gray-800 rounded-full px-2 py-1">{{ task.milestone }}</span>
-            </div>
-            {% endif %}
-            <div class="flex flex-wrap mt-2">
-                {% for label in task.labels %}
-                    <span class="mr-2 px-2 py-1 rounded text-sm hover:cursor-pointer" style="background-color: {{ label.color }}; color: {{ label.text_color }};">
-                        {{ label.name }}
-                    </span>
-                {% endfor %}
-            </div>
+{% for board_issue in board_issues %}
+<li class="p-5 rounded bg-white shadow-sm mb-2 cursor-grab" {% if forloop.last and board_issues|length == 10 %}hx-trigger="revealed" hx-get="{% url 'load_more_issues' %}?page={{ page|add:1 }}&board_id={{ board_id }}" hx-swap="afterend"{% endif %}>
+    <input type="hidden" name="items" value="{{ board_issue.issue.id }}">
+    <article>
+        <div class="flex justify-between">
+            <h4 class="text-base font-semibold mb-0 mt-0 mr-3 break-words">
+                <a href="{{ board_issue.issue.web_url }}" target="_blank" class="hover:text-blue-800 hover:underline">{{ board_issue.issue.title }}</a>
+            </h4>
         </div>
-    </li>
+        {% if board_issue.issue.milestone %}
+        <div class="flex mt-1">
+            <span class="text-xs bg-gray-200 text-gray-800 rounded-full px-2 py-1">{{ board_issue.issue.milestone }}</span>
+        </div>
+        {% endif %}
+        <div class="flex flex-wrap mt-2">
+            {% for label in board_issue.issue.labels %}
+            <span class="mr-2 px-2 py-1 rounded text-sm" style="background-color: {{ label.color }}; color: {{ label.text_color }};">
+                {{ label.name }}
+            </span>
+            {% endfor %}
+        </div>
+    </article>
+</li>
 {% endfor %}
-{% if tasks %}
-    <li hx-trigger="revealed" hx-get="{% url 'load_more_issues' %}?state={{ state }}&label={{ label }}&page={{ page|add:1 }}" hx-swap="beforeend"></li>
-{% endif %}
-
