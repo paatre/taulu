@@ -29,12 +29,12 @@ def kanban_board(request):
     )
 
 
-@csrf_exempt
 def reorder_issues(request):
     if request.method == "POST":
         try:
             board_id = request.POST.get("board_id")
             ordered_ids = request.POST.getlist("items")
+
             if not ordered_ids:
                 raise ValueError("No items received")
             if not board_id:
@@ -43,33 +43,14 @@ def reorder_issues(request):
             board = Board.objects.get(id=board_id)
 
             for index, issue_id in enumerate(ordered_ids):
-                board_issue = BoardIssue.objects.get(issue__id=issue_id)
+                BoardIssue.objects.filter(issue__in=ordered_ids).update(
+                    board=board, position=index + 1
+                )
 
-                # Check if the issue is moved to a different board
-                if board_issue.board_id != int(board_id):
-                    old_board_id = board_issue.board_id
-                    board_issue.board_id = board_id
-                    board_issue.position = index + 1
-                    board_issue.save()
-
-                    # Adjust positions in the old board
-                    old_board_issues = BoardIssue.objects.filter(
-                        board_id=old_board_id
-                    ).order_by("position")
-                    for i, issue in enumerate(old_board_issues):
-                        issue.position = i + 1
-                        issue.save()
-                else:
-                    # If the issue remains in the same board, just update the position
-                    board_issue.position = index + 1
-                    board_issue.save()
-
-            return JsonResponse({"status": "success", "ordered_ids": ordered_ids})
+            return HttpResponse()
         except Exception as e:
-            return JsonResponse({"status": "failed", "message": str(e)}, status=400)
-    return JsonResponse(
-        {"status": "failed", "message": "Invalid request method"}, status=400
-    )
+            return HttpResponseBadRequest(str(e))
+    return HttpResponseBadRequest("Invalid request method")
 
 
 def load_more_issues(request):
