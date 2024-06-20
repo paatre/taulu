@@ -26,7 +26,8 @@
                     onEnd: function (evt) {
                         evt.item.classList.remove('cursor-grabbing');
                         evt.item.classList.add('cursor-grab');
-                        // htmx.trigger(evt.item.closest('form'), 'end');
+                        if (evt.from === evt.to) return;
+                        htmx.trigger(evt.item.closest('form'), 'end');
                     }
                 });
 
