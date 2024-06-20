@@ -29,6 +29,7 @@ def kanban_board(request):
     )
 
 
+@csrf_exempt
 def reorder_issues(request):
     if request.method == "POST":
         try:
@@ -42,14 +43,19 @@ def reorder_issues(request):
 
             board = Board.objects.get(id=board_id)
 
-            for index, issue_id in enumerate(ordered_ids):
-                BoardIssue.objects.filter(issue__in=ordered_ids).update(
-                    board=board, position=index + 1
-                )
+            objs = list(BoardIssue.objects.filter(issue__in=ordered_ids))
+
+            with transaction.atomic():
+                for index, obj in enumerate(objs):
+                    obj.board = board
+                    obj.position = index + 1
+
+                BoardIssue.objects.bulk_update(objs, ["board", "position"])
 
             return HttpResponse()
         except Exception as e:
             return HttpResponseBadRequest(str(e))
+
     return HttpResponseBadRequest("Invalid request method")
 
 
