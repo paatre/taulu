@@ -5,7 +5,7 @@ from .models import Board, Issue, BoardIssue
 
 @admin.register(Board)
 class BoardAdmin(admin.ModelAdmin):
-    list_display = ("id", "name")
+    list_display = ("id", "name", "wip_limit")
     search_fields = ("name",)
 
 

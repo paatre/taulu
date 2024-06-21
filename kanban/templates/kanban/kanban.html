@@ -18,7 +18,16 @@
                 var sortableInstance = new Sortable(sortable, {
                     animation: 150,
                     ghostClass: 'bg-amber-200',
-                    group: 'shared',
+                    group: {
+                        name: 'shared',
+                        put: (to) => {
+                            var targetBoard = to.el.closest('.board');
+                            var wipLimit = parseInt(targetBoard.dataset.wipLimit);
+                            if (wipLimit === 0) return true;
+                            var issuesCount = to.el.children.length;
+                            return issuesCount < wipLimit;
+                        }
+                    },
                     onStart: function (evt) {
                         evt.item.classList.add('cursor-grabbing');
                         evt.item.classList.remove('cursor-grab');
@@ -42,8 +51,15 @@
     <h1 class="text-3xl font-bold mb-5">Kanban Board</h1>
     <div class="flex space-x-4">
         {% for board in boards %}
-        <div class="w-1/3 bg-gray-200 p-3 rounded shadow">
-            <h2 class="text-2xl font-semibold mb-3">{{ board.name }}</h2>
+        <div class="w-1/3 bg-gray-200 p-3 rounded shadow relative board" data-board-id="{{ board.id }}" data-wip-limit="{{ board.wip_limit }}">
+            {% if board.wip_limit > 0 %}
+            <div class="size-16 bg-black text-white rounded-md p-4 text-center text-lg font-semibold absolute -top-8 inset-x-1/2 transform -translate-x-1/2">
+                {{ board.wip_limit }}
+            </div>
+            {% endif %}
+            <h2 class="text-2xl font-semibold mb-3">
+                {{ board.name }}
+            </h2>
             <form method="post" hx-post="{% url 'reorder_issues' %}" hx-trigger="end" hx-swap="none">
                 {% csrf_token %}
                 <input type="hidden" name="board_id" value="{{ board.id }}">
