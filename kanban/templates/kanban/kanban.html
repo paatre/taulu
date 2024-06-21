@@ -60,7 +60,7 @@
             <h2 class="text-2xl font-semibold mb-3">
                 {{ board.name }}
             </h2>
-            <form method="post" hx-post="{% url 'reorder_issues' %}" hx-trigger="end" hx-swap="none">
+            <form class="h-full" method="post" hx-post="{% url 'reorder_issues' %}" hx-trigger="end" hx-swap="none">
                 {% csrf_token %}
                 <input type="hidden" name="board_id" value="{{ board.id }}">
                 <ul class="sortable w-full h-full list-none mb-0 p-0 overflow-x-hidden overflow-y-auto">
