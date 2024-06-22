@@ -21,14 +21,3 @@ body {
 .code {
     font-family: 'GitLab Mono', monospace;
 }
-
-.issue-link {
-    text-decoration: none;
-    color: inherit;
-}
-
-.issue-link:hover {
-    color: #1f75cb;
-    text-decoration: underline;
-}
-
