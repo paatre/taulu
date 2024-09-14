@@ -33,7 +33,7 @@ for Taulu to be useful.
 
 ## Installation
 
-To install the Kanban Project:
+To install Taulu:
 
 1. Clone this repository to your local machine using `git clone`
 2. Create a virtual environment and activate it
@@ -43,7 +43,7 @@ To install the Kanban Project:
 
 ## Usage
 
-To use the Kanban Project:
+To use the Taulu:
 
 1. Start the development server by running `python manage.py runserver`
 2. Open a web browser and navigate to `http://localhost:8000/kanban/board/`
