@@ -3,14 +3,6 @@ Taulu
 
 Taulu is a board application for all of your issues between all projects within a GitLab instance.
 
-**Table of Contents**
-
-1. [Introduction](#introduction)
-2. [Features](#features)
-3. [Requirements](#requirements)
-4. [Installation](#installation)
-5. [Usage](#usage)
-
 ## Introduction
 
 Currently, there's no "global" board for all of your different projects in GitLab. There _is_ an issue listing
