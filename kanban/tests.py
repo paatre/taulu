@@ -1,7 +1,7 @@
 from unittest.mock import patch
 from django.test import TestCase, override_settings
 import gitlab
-from kanban.utils import get_gitlab_client, GitLabConfigurationError, GitLabConnectionError
+from kanban.gitlab import get_gitlab_client, GitLabConfigurationError, GitLabConnectionError
 
 class GitLabClientTests(TestCase):
 
@@ -9,7 +9,7 @@ class GitLabClientTests(TestCase):
         GITLAB_URL='https://gitlab.example.com',
         GITLAB_PRIVATE_TOKEN='fake-token'
     )
-    @patch('kanban.utils.gitlab.Gitlab')
+    @patch('kanban.gitlab.gitlab.Gitlab')
     def test_get_gitlab_client(self, mock_gl):
         gl = get_gitlab_client()
 
@@ -26,7 +26,7 @@ class GitLabClientTests(TestCase):
         GITLAB_URL='https://gitlab.example.com',
         GITLAB_PRIVATE_TOKEN='invalid-token'
     )
-    @patch('kanban.utils.gitlab.Gitlab')
+    @patch('kanban.gitlab.gitlab.Gitlab')
     def test_get_gitlab_client_invalid_private_token(self, mock_gl):
         gl = mock_gl.return_value
         gl.auth.side_effect = gitlab.GitlabAuthenticationError()
@@ -40,7 +40,7 @@ class GitLabClientTests(TestCase):
         GITLAB_URL='https://gitlab.invalid.com',
         GITLAB_PRIVATE_TOKEN='fake-token'
     )
-    @patch('kanban.utils.gitlab.Gitlab')
+    @patch('kanban.gitlab.gitlab.Gitlab')
     def test_get_gitlab_client_invalid_url(self, mock_gl):
         gl = mock_gl.return_value
         gl.auth.side_effect = gitlab.GitlabConnectionError()
