@@ -39,12 +39,12 @@ def reorder_issues(request):
     if request.method == "POST":
         try:
             board_id = request.POST.get("board_id")
-            ordered_ids = request.POST.getlist("items")
-
-            if not ordered_ids:
-                raise ValueError("No items received")
             if not board_id:
                 raise ValueError("Board ID is required")
+
+            ordered_ids = request.POST.getlist("items")
+            if not ordered_ids:
+                raise ValueError("No items received")
 
             board = Board.objects.get(id=board_id)
 
