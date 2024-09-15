@@ -26,6 +26,14 @@ def kanban_board(request):
     )
 
 
+def check_wip_limit(board, ordered_ids):
+    if board.name.lower() == "working":
+        new_working_count = len(ordered_ids)
+        if board.wip_limit > 0 and new_working_count > board.wip_limit:
+            return HttpResponseBadRequest(
+                "WIP limit exceeded for the Working board"
+            )
+
 @csrf_exempt
 def reorder_issues(request):
     if request.method == "POST":
@@ -40,12 +48,7 @@ def reorder_issues(request):
 
             board = Board.objects.get(id=board_id)
 
-            if board.name.lower() == "working":
-                new_working_count = len(ordered_ids)
-                if board.wip_limit > 0 and new_working_count > board.wip_limit:
-                    return HttpResponseBadRequest(
-                        "WIP limit exceeded for the Working board"
-                    )
+            check_wip_limit(board, ordered_ids)
 
             objs = list(BoardIssue.objects.filter(issue__in=ordered_ids))
 
