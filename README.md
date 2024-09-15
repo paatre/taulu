@@ -39,7 +39,7 @@ To install Taulu:
 2. Create a virtual environment and activate it
 3. Run `pip install -r requirements.txt` to install dependencies
 4. Run `python manage.py migrate` to create database tables
-5. Run `python manage.py syncdb` to populate the database with initial data
+5. Run `python manage.py sync_gitlab_issues` to populate the database with initial data
 
 ## Usage
 
