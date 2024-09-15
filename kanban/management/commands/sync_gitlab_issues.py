@@ -2,10 +2,8 @@
 
 from django.core.management.base import BaseCommand
 from django.db.models import F
-
-import gitlab
 from tqdm import tqdm
-
+from kanban.gitlab import get_gitlab_client
 from kanban.models import Board, Issue, BoardIssue
 
 
@@ -13,10 +11,15 @@ class Command(BaseCommand):
     help = "Sync issues from GitLab to the local database"
 
     def handle(self, *args, **kwargs):
-        gl = gitlab.Gitlab(
-            settings.GITLAB_URL, private_token=settings.GITLAB_PRIVATE_TOKEN
-        )
-        user = gl.users.list(username=settings.GITLAB_USERNAME)[0]
+        gl = get_gitlab_client()
+        user = gl.user
+
+        if not user:
+            self.stdout.write(self.style.ERROR("Failed to connect to GitLab"))
+            return
+        self.stdout.write(self.style.SUCCESS(
+            f"Successfully connected to GitLab as {user.username}"
+        ))
 
         boards = {
             "open": Board.objects.get_or_create(name="Open")[0],
@@ -33,9 +36,9 @@ class Command(BaseCommand):
             "with_labels_details": True,
         }
 
-        all_issues = gl.issues.list(**issue_params, get_all=True)
+        self.stdout.write("Syncing issues from GitLab...")
+        all_issues = gl.issues.list(**issue_params, iterator=True)
 
-        print("Syncing issues from GitLab...")
         for issue in tqdm(all_issues, desc="Processing issues"):
             labels = [
                 {
