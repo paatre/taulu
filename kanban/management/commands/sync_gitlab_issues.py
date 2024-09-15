@@ -1,7 +1,6 @@
 # kanban/management/commands/sync_gitlab_issues.py
 
 from django.core.management.base import BaseCommand
-from django.conf import settings
 from django.db.models import F
 
 import gitlab
