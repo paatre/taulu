@@ -1,5 +1,3 @@
-# kanban/utils.py
-
 import gitlab
 from django.conf import settings
 
