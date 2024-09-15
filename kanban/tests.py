@@ -1,9 +1,13 @@
 from unittest.mock import patch
 from django.test import TestCase, override_settings
 import gitlab
+import kanban.gitlab
 from kanban.gitlab import get_gitlab_client, GitLabConfigurationError, GitLabConnectionError
 
 class GitLabClientTests(TestCase):
+
+    def setUp(self):
+        kanban.gitlab._gitlab_client = None
 
     @override_settings(
         GITLAB_URL='https://gitlab.example.com',
