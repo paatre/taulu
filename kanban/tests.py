@@ -30,7 +30,7 @@ class GitLabClientTests(TestCase):
     def test_get_gitlab_client_invalid_private_token(self, mock_gl):
         gl = mock_gl.return_value
         gl.auth.side_effect = gitlab.GitlabAuthenticationError()
-        
+
         with self.assertRaises(GitLabConfigurationError) as context:
             get_gitlab_client()
 

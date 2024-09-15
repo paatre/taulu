@@ -29,7 +29,7 @@ def get_gitlab_client():
         try:
             client = gitlab.Gitlab(
                 settings.GITLAB_URL,
-                private_token=settings.GITLAB_PRIVATE_TOKEN,
+                settings.GITLAB_PRIVATE_TOKEN,
             )
             client.auth()
             _gitlab_client = client
