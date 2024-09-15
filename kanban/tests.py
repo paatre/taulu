@@ -38,7 +38,10 @@ class GitLabClientTests(TestCase):
         with self.assertRaises(GitLabConfigurationError) as context:
             get_gitlab_client()
 
-        self.assertIn("Invalid GitLab configuration. Please check your settings.", str(context.exception))
+        self.assertIn(
+            "Invalid GitLab configuration. Please check your settings.",
+            str(context.exception)
+        )
 
     @override_settings(
         GITLAB_URL='https://gitlab.invalid.com',
@@ -52,7 +55,10 @@ class GitLabClientTests(TestCase):
         with self.assertRaises(GitLabConnectionError) as context:
             get_gitlab_client()
 
-        self.assertIn("Could not connect to GitLab. Please check your settings.", str(context.exception)) 
+        self.assertIn(
+            "Could not connect to GitLab. Please check your settings.",
+            str(context.exception)
+        )
 
     @override_settings(
         GITLAB_URL=None,
@@ -62,7 +68,10 @@ class GitLabClientTests(TestCase):
         with self.assertRaises(GitLabConfigurationError) as context:
             get_gitlab_client()
 
-        self.assertIn("GITLAB_URL is not configured", str(context.exception))
+        self.assertIn(
+            "GITLAB_URL is not configured",
+            str(context.exception)
+        )
 
     @override_settings(
         GITLAB_URL='https://gitlab.example.com',
@@ -72,4 +81,7 @@ class GitLabClientTests(TestCase):
         with self.assertRaises(GitLabConfigurationError) as context:
             get_gitlab_client()
 
-        self.assertIn("GITLAB_PRIVATE_TOKEN is not configured", str(context.exception))
+        self.assertIn(
+            "GITLAB_PRIVATE_TOKEN is not configured",
+            str(context.exception)
+        )
