@@ -1,8 +1,12 @@
-from unittest.mock import patch
+from io import StringIO
+from unittest.mock import MagicMock, patch
+from django.core.management import call_command
 from django.test import TestCase, override_settings
 import gitlab
 import kanban.gitlab
 from kanban.gitlab import get_gitlab_client, GitLabConfigurationError, GitLabConnectionError
+from kanban.models import Issue
+
 
 class GitLabClientTests(TestCase):
 
@@ -85,3 +89,34 @@ class GitLabClientTests(TestCase):
             "GITLAB_PRIVATE_TOKEN is not configured",
             str(context.exception)
         )
+
+
+class GitLabIssueTests(TestCase):
+
+    @override_settings(
+        GITLAB_PRIVATE_TOKEN='fake-token',
+        GITLAB_URL='https://gitlab.example.com',
+        GITLAB_USERNAME='user',
+    )
+    @patch('kanban.gitlab.gitlab.Gitlab')
+    def test_sync_gitlab_issues(self, mock_gl):
+        assert Issue.objects.count() == 0
+
+        mock_issue = MagicMock()
+        mock_issue.id = 1
+        mock_issue.iid = 1
+        mock_issue.title = 'Test Issue'
+        mock_issue.description = 'This is a test issue.'
+        mock_issue.state = 'opened'
+        mock_issue.created_at = '2024-09-16T00:00:00Z'
+        mock_issue.updated_at = '2024-09-16T00:00:00Z'
+        mock_issue.milestone = None
+        mock_issue.web_url = 'https://gitlab.example.com/user/project/issues/1'
+
+        mock_gl.return_value.user.username = 'user'
+        mock_gl.return_value.issues.list.return_value = [mock_issue]
+
+        out = StringIO()
+        call_command('sync_gitlab_issues', stdout=out)
+
+        assert Issue.objects.count() > 0
