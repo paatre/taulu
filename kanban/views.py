@@ -1,5 +1,3 @@
-# kanban/views.py
-
 from django.db import transaction
 from django.http import (
     HttpResponse,
@@ -8,8 +6,8 @@ from django.http import (
 )
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
-
 from .models import Board, BoardIssue
+
 
 MAX_RETRIES = 5
 
