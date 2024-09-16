@@ -1,4 +1,4 @@
-from io import StringIO
+import os
 from unittest.mock import MagicMock, patch
 from django.core.management import call_command
 from django.test import TestCase, override_settings
@@ -116,7 +116,7 @@ class GitLabIssueTests(TestCase):
         mock_gl.return_value.user.username = 'user'
         mock_gl.return_value.issues.list.return_value = [mock_issue]
 
-        out = StringIO()
-        call_command('sync_gitlab_issues', stdout=out)
+        with open(os.devnull, 'w') as f:
+            call_command('sync_gitlab_issues', stdout=f)
 
         assert Issue.objects.count() > 0
