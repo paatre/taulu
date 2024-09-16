@@ -138,3 +138,12 @@ class KanbanBoardTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'kanban/kanban.html')
         self.assertContains(response, 'Kanban Board')
+
+    def test_kanban_board_no_boards(self):
+        # Act
+        response = self.client.get('/')
+
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'kanban/kanban.html')
+        self.assertContains(response, 'No boards yet')
