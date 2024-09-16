@@ -98,6 +98,7 @@ class GitLabIssueTests(TestCase):
         GITLAB_URL='https://gitlab.example.com',
         GITLAB_USERNAME='user',
     )
+    @patch.dict(os.environ, {'TQDM_DISABLE': '1'})
     @patch('kanban.gitlab.gitlab.Gitlab')
     def test_sync_gitlab_issues(self, mock_gl):
         assert Issue.objects.count() == 0
