@@ -13,13 +13,11 @@ MAX_RETRIES = 5
 
 
 def kanban_board(request):
-    boards = Board.objects.all()
-
     return render(
         request,
         "kanban/kanban.html",
         {
-            "boards": boards,
+            "boards": Board.objects.all(),
         },
     )
 
