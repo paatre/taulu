@@ -5,7 +5,7 @@ from django.test import TestCase, override_settings
 import gitlab
 import kanban.gitlab
 from kanban.gitlab import get_gitlab_client, GitLabConfigurationError, GitLabConnectionError
-from kanban.models import Issue
+from kanban.models import Board, Issue
 
 
 class GitLabClientTests(TestCase):
@@ -121,3 +121,20 @@ class GitLabIssueTests(TestCase):
             call_command('sync_gitlab_issues', stdout=f)
 
         assert Issue.objects.count() > 0
+
+
+class KanbanBoardTests(TestCase):
+
+    def test_kanban_board(self):
+        # Arrange
+        board_names = ['Open', 'Working', 'Closed']
+        for name in board_names:
+            Board.objects.create(name=name)
+
+        # Act
+        response = self.client.get('/')
+
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'kanban/kanban.html')
+        self.assertContains(response, 'Kanban Board')
